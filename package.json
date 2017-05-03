@@ -2,6 +2,15 @@
   "name": "satay",
   "version": "1.0.0",
   "description": "A utility for uploading static sites to AWS S3.",
+  "keywords": [
+    "aws",
+    "s3",
+    "bucket",
+    "website",
+    "static-site",
+    "deploy",
+    "upload"
+  ],
   "main": "lib/index.js",
   "repository": "jameslnewell/satay",
   "engines": {
