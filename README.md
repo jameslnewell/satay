@@ -136,6 +136,6 @@ satay(bucket: String, groups: Array<Group>, options: Object): Promise
   - `policy` - *Optional*. An `object`. The AWS policy. Defaults to public read access for all files.
   - `websiteConfig` - *Optional*. An `object`. The AWS website configuration. Uses `index.html` as the default `IndexDocument` and `404.html` as the default `ErrorDocument`.
 
-## Demonstration
+## Demo
 
 [![asciicast](https://asciinema.org/a/epn855cax1ppvciuhgx5bsbfr.png)](https://asciinema.org/a/epn855cax1ppvciuhgx5bsbfr)
