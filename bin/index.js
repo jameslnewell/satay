@@ -5,6 +5,7 @@ const chalk = require('chalk');
 const minimist = require('minimist');
 const omit = require('lodash.omit');
 const satay = require('..');
+const err = require('../lib/err');
 
 const argv = minimist(process.argv.slice(2));
 const configFile = argv.config ? path.resolve(argv.config) : path.resolve('satay.config.js');
@@ -15,14 +16,14 @@ let config = null;
 try {
   config = require(configFile);
 } catch(error) {
-  console.log(chalk.red(`Unable to load config file "${configFile}": ${error}`));
-  process.exit(1);
+  err('Unable to load config file', error);
+  return;
 }
 
 //assert the config file is an object
 if (typeof config !== 'object') {
-  console.log(chalk.red(`Config is expected to be an object.`));
-  process.exit(1);
+  err('Config is expected to be an object', new Error());
+  return;
 }
 
 const bucket = config.bucket;
