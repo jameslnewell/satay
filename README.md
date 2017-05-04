@@ -5,7 +5,7 @@
 
 A utility for uploading static sites to AWS S3.
 
-[<img src="https://asciinema.org/a/epn855cax1ppvciuhgx5bsbfr.png" alt="asciicast" width="60%"/>](https://asciinema.org/a/epn855cax1ppvciuhgx5bsbfr)
+[<img src="https://asciinema.org/a/4k2xeld8239ece83ln31s6qk7.png" width="80%"/>](https://asciinema.org/a/4k2xeld8239ece83ln31s6qk7)
 
 ## Usage
 

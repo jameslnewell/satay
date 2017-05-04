@@ -1,5 +1,9 @@
 # Change log
 
+## 1.1.4
+
+- updated the demo video
+
 ## 1.1.3
 
 - add missing `babel-runtime` dependency
