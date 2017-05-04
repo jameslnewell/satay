@@ -1,5 +1,9 @@
 # Change log
 
+## 1.1.5
+
+- fix badge links
+
 ## 1.1.4
 
 - updated the demo video

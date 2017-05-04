@@ -1,7 +1,7 @@
 # satay
 
-[![satay](https://img.shields.io/npm/v/satay.svg)]() 
-[![Travis](https://img.shields.io/travis/jameslnewell/satay.svg)]()
+[![satay](https://img.shields.io/npm/v/satay.svg)](https://www.npmjs.com/package/satay) 
+[![Travis](https://img.shields.io/travis/jameslnewell/satay.svg)](https://travis-ci.org/jameslnewell/satay)
 
 A utility for uploading static sites to AWS S3.
 
