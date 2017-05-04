@@ -38,7 +38,10 @@
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.4.0",
     "flow-bin": "^0.45.0",
-    "jest": "^19.0.2"
+    "husky": "^0.13.3",
+    "jest": "^19.0.2",
+    "lint-staged": "^3.4.1",
+    "prettier": "^1.3.1"
   },
   "bin": {
     "satay": "lib/cli.js"
@@ -47,7 +50,14 @@
     "flow": "flow",
     "build": "babel ./src --out-dir ./lib --ignore test.js",
     "test": "jest",
-    "example": "cd example && node ../lib/cli.js"
+    "example": "cd example && node ../lib/cli.js",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write --singleQuote",
+      "git add"
+    ]
   },
   "license": "MIT"
 }
