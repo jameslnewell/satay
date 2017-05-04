@@ -1,5 +1,9 @@
 # Change log
 
+## 1.1.3
+
+- add missing `babel-runtime` dependency
+
 ## 1.1.2
 
 - run build and tests before publishing
