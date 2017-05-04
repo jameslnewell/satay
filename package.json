@@ -1,6 +1,6 @@
 {
   "name": "satay",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "A utility for uploading static sites to AWS S3.",
   "keywords": [
     "aws",
@@ -11,10 +11,13 @@
     "deploy",
     "upload"
   ],
-  "main": "lib/index.js",
   "repository": "jameslnewell/satay",
+  "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
   "engines": {
-    "node": ">=7.6"
+    "node": ">=4"
   },
   "dependencies": {
     "aws-sdk": "^2.48.0",
@@ -27,11 +30,19 @@
     "mime-types": "^2.1.15",
     "minimist": "^1.2.0"
   },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.23.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.4.0"
+  },
   "bin": {
-    "satay": "bin/index.js"
+    "satay": "lib/cli.js"
   },
   "scripts": {
-    "example": "cd example && node ../bin/index.js"
+    "build": "babel ./src --out-dir ./lib",
+    "example": "cd example && node ../lib/cli.js"
   },
   "license": "MIT"
 }
