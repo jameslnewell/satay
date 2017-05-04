@@ -101,7 +101,7 @@ $ satay --config=satay.config.js --force-upload
 
 **Flags:**
 
-- `config` - *Optional*. The configuration file name. Defaults to `satay.config.js` in the current working directory.
+- `--config` - *Optional*. The configuration file name. Defaults to `satay.config.js` in the current working directory.
 - `--force-upload` - *Optional*. Forces all files to be uploaded regardless of whether the files have been modified. Useful for applying new metadata.
 
 ### Configuration
@@ -140,4 +140,4 @@ satay(bucket: String, groups: Array<Group>, options: Object): Promise
 
 ## Change log
 
-[Change log](https://github.com/jameslnewell/satay/blob/master/CHANGELOG.md).
+[Change log](https://github.com/jameslnewell/satay/blob/master/CHANGELOG.md)
