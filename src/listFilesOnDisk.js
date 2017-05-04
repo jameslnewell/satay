@@ -1,9 +1,11 @@
+//@flow
+import type {Groups, FileFilter, FileMap} from './types';
 const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
-const sortBy = require('lodash.sortby');
+const calcETag = require('./calcETag');
 
-const createFilter = (filter, defaultFilter) => {
+const toFilterFunction = function(filter: RegExp | FileFilter, defaultFilter: FileFilter): FileFilter {
 
   if (!filter) {
     return defaultFilter;
@@ -16,59 +18,60 @@ const createFilter = (filter, defaultFilter) => {
   return filter;
 };
 
-module.exports = async function(groups) {
+const listFiles = (source: string): Promise<Array<string>> => new Promise((resolve, reject) => {
+  glob('**/*', {cwd: source, nodir: true}, (error, files) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(files);
+    }
+  });
+});
+
+module.exports = async function(groups: Groups): Promise<FileMap> {
   const filesOnDisk = [];
-  return Promise.all(groups.map(group => new Promise((resolve, reject) => {
+  return Promise.all(groups.map(group => {
 
     const source = path.resolve(group.source || '');
-    const include = createFilter(group.include, () => true);
-    const exclude = createFilter(group.exclude, () => false);
+    const include = toFilterFunction(group.include, () => true);
+    const exclude = toFilterFunction(group.exclude, () => false);
     const prefix = group.prefix || '';
     const params = group.params || {};
 
     if (!fs.existsSync(source)) {
-      reject(new Error(`Group source "${source}" does not exist.`));
-      return;
+      return Promise.reject(new Error(`Group source "${source}" does not exist.`));
     }
 
-    glob('**/*', {cwd: source, nodir: true}, (error, files) => {
+    return listFiles(source).then(files => files.map(file => {
 
-      if (error) {
-        reject(error);
-        return;
-      }
+      const fullPath = path.resolve(source, file);
+      const fullKey = path.join(prefix || '', file).replace(/\\/g, '/');
 
-      files.forEach(file => {
+      //filter the files by key
+      if (include(fullKey) && !exclude(fullKey)) {
 
-        const filePath = path.resolve(source, file);
-        const objectKey = path.join(prefix || '', file).replace(/\\/g, '/');
-
-        //filter the file
-        if (include(filePath) && !exclude(filePath)) {
-
-          //check if we've already added this file in another group
-          if (filesOnDisk.find(fileOnDisk => fileOnDisk.path === filePath)) {
-            reject(new Error(`File "${filePath}" is matched by multiple groups.`));
-            return;
-          }
-
-          //add the file to the list of files ready for upload
-          filesOnDisk.push({
-            path: filePath,
-            key: objectKey,
-            params
-          });
-
-          resolve();
-
+        //check if we've already added this file from another group
+        if (filesOnDisk.find(fileOnDisk => fileOnDisk.path === fullPath)) {
+          return Promise.reject(new Error(`File "${fullPath}" is matched by multiple groups.`));
         }
 
-      });
+        //get the etag
+        return calcETag(fullPath).then(etag => {
 
-    });
-  })))
-    .then(files => sortBy(filesOnDisk, ['key']))
+          //add the file to the list of files on disk
+          filesOnDisk[fullKey] = {
+            path: fullPath,
+            hash: etag,
+            params
+          };
+
+        });
+
+      }
+
+    }));
+
+  }))
+    .then(() => filesOnDisk)
   ;
 };
-
-//TODO: error if the same file is included twice

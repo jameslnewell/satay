@@ -2,6 +2,8 @@
 
 A utility for uploading static sites to AWS S3.
 
+[<img src="https://asciinema.org/a/epn855cax1ppvciuhgx5bsbfr.png" alt="asciicast" width="60%"/>](https://asciinema.org/a/epn855cax1ppvciuhgx5bsbfr)
+
 ## Usage
 
 ### Using the CLI
@@ -66,13 +68,13 @@ A utility for uploading static sites to AWS S3.
     satay('jameslnewell.me', [
 
         {
-          source: './fixtures',
+          source: './static',
           include: /\.html$/
         },
     
         //cache finger-printed assets for up to 1 year
         {
-          source: './fixtures',
+          source: './static',
           exclude: /\.html$/,
           params: {
             CacheControl: `Cache-Control: max-age=${60*60*24*365.25}, public`
@@ -136,6 +138,6 @@ satay(bucket: String, groups: Array<Group>, options: Object): Promise
   - `policy` - *Optional*. An `object`. The AWS policy. Defaults to public read access for all files.
   - `websiteConfig` - *Optional*. An `object`. The AWS website configuration. Uses `index.html` as the default `IndexDocument` and `404.html` as the default `ErrorDocument`.
 
-## Demo
+## Change log
 
-[![asciicast](https://asciinema.org/a/epn855cax1ppvciuhgx5bsbfr.png)](https://asciinema.org/a/epn855cax1ppvciuhgx5bsbfr)
+[Change log](https://github.com/jameslnewell/satay/blob/master/CHANGELOG.md).

@@ -1,11 +1,11 @@
 const fs = require('fs');
 const crypto = require('crypto');
 
-module.exports = async function(path) {
+module.exports = async function(file) {
   return new Promise((resolve, reject) => {
     const hash = crypto.createHash('md5');
 
-    fs.createReadStream(path)
+    fs.createReadStream(file)
       .on('data', data => {
         hash.update(data, 'utf8');
       })

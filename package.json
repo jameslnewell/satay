@@ -1,6 +1,6 @@
 {
   "name": "satay",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A utility for uploading static sites to AWS S3.",
   "keywords": [
     "aws",
@@ -26,22 +26,27 @@
     "glob": "^7.1.1",
     "lodash.difference": "^4.5.0",
     "lodash.omit": "^4.5.0",
-    "lodash.sortby": "^4.7.0",
     "mime-types": "^2.1.15",
     "minimist": "^1.2.0"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
+    "babel-jest": "^19.0.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.4.0"
+    "babel-preset-env": "^1.4.0",
+    "flow-bin": "^0.45.0",
+    "jest": "^19.0.2"
   },
   "bin": {
     "satay": "lib/cli.js"
   },
   "scripts": {
-    "build": "babel ./src --out-dir ./lib",
+    "flow": "flow",
+    "build": "babel ./src --out-dir ./lib --ignore test.js",
+    "test": "jest",
     "example": "cd example && node ../lib/cli.js"
   },
   "license": "MIT"
