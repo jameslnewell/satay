@@ -1,5 +1,9 @@
 # Change log
 
+## 1.1.2
+
+- run build and tests before publishing
+
 ## 1.1.1
 
 - fixed some documentation

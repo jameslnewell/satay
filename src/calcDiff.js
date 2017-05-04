@@ -4,7 +4,7 @@ import type {FileMap, ObjectMap, FileStatuses} from './types';
 module.exports = function(
   filesOnDisk: FileMap,
   objectsInBucket: ObjectMap,
-  forceUpload: boolean
+  forceUpload: boolean = false
 ): FileStatuses {
   const diff = {};
 

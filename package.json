@@ -1,6 +1,6 @@
 {
   "name": "satay",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A utility for uploading static sites to AWS S3.",
   "keywords": [
     "aws",
@@ -51,7 +51,8 @@
     "build": "babel ./src --out-dir ./lib --ignore test.js",
     "test": "jest",
     "example": "cd example && node ../lib/cli.js",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "prepublish": "npm run flow && npm run build && npm run test"
   },
   "lint-staged": {
     "*.js": [
