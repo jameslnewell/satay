@@ -8,14 +8,16 @@ const satay = require('..');
 const err = require('./err');
 
 const argv = minimist(process.argv.slice(2));
-const configFile = argv.config ? path.resolve(argv.config) : path.resolve('satay.config.js');
+const configFile = argv.config
+  ? path.resolve(argv.config)
+  : path.resolve('satay.config.js');
 const configDirectory = path.dirname(configFile);
 
 //try and read the config file
 let config = null;
 try {
   config = require(configFile);
-} catch(error) {
+} catch (error) {
   err('Unable to load config file', error);
 }
 
@@ -27,9 +29,11 @@ if (typeof config !== 'object') {
 const bucket = config.bucket;
 
 //resolve groups relative to the config directory
-const groups = config.groups.map(group => Object.assign({}, group, {
-  source: path.resolve(configDirectory, group.source)
-}));
+const groups = config.groups.map(group =>
+  Object.assign({}, group, {
+    source: path.resolve(configDirectory, group.source)
+  })
+);
 
 const options = Object.assign(omit(config, ['bucket', 'groups']));
 

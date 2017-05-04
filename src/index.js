@@ -45,7 +45,6 @@ module.exports = async function(bucket, groups, options) {
   try {
     objectsInBucket = await listObjectsInBucket(b);
   } catch (listError) {
-
     //exit due to an unrecoverable error
     if (!listError || listError.code !== 'NoSuchBucket') {
       err('Unable to list files in bucket', listError);
@@ -57,35 +56,35 @@ module.exports = async function(bucket, groups, options) {
       await b.create();
       console.log();
       info('Bucket created');
-    } catch(createBucketError) {
+    } catch (createBucketError) {
       err('Unable to create bucket', createBucketError);
       return;
     }
 
     //attempt to configure the bucket
     try {
-      await Promise.all([
-        b.configureWebsite(),
-        b.configurePolicy()
-      ]);
+      await Promise.all([b.configureWebsite(), b.configurePolicy()]);
       info('Bucket configured');
-    } catch(configureBucketError) {
+    } catch (configureBucketError) {
       err('Unable to configure bucket', configureBucketError);
       return;
     }
-
   }
 
   //calculate the diff
   const diff = calcDiff(filesOnDisk, objectsInBucket, options.forceUpload);
 
   //attempt to upload files
-  const keysToUpload = Object.keys(diff).filter(key => diff[key] === 'A' || diff[key] === 'M');
+  const keysToUpload = Object.keys(diff).filter(
+    key => diff[key] === 'A' || diff[key] === 'M'
+  );
   try {
-    await Promise.all(keysToUpload.map(keyToUpload => {
-      const file = filesOnDisk[keyToUpload];
-      return b.upload(file.path, keyToUpload, file.params);
-    }));
+    await Promise.all(
+      keysToUpload.map(keyToUpload => {
+        const file = filesOnDisk[keyToUpload];
+        return b.upload(file.path, keyToUpload, file.params);
+      })
+    );
   } catch (uploadError) {
     err('Unable to upload files to bucket', uploadError);
     return;
@@ -113,5 +112,4 @@ module.exports = async function(bucket, groups, options) {
   ok('Upload complete.');
   console.log(`  🔗  ${chalk.blue(chalk.underline(b.url()))}`);
   console.log();
-
 };

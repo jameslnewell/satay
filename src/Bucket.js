@@ -4,10 +4,11 @@ const AWS = require('aws-sdk');
 const mime = require('mime-types');
 const omit = require('lodash.omit');
 
-const noop = () => {/* do nothing */};
+const noop = () => {
+  /* do nothing */
+};
 
 class Bucket {
-
   /**
    * @param string  bucket
    * @param object  [options]
@@ -16,7 +17,6 @@ class Bucket {
    * @param object  [options.websiteConfig]
    */
   constructor(bucket, options) {
-
     this.bucket = bucket;
     this.options = options || {};
 
@@ -26,7 +26,6 @@ class Bucket {
         Bucket: this.bucket
       }
     });
-
   }
 
   /**
@@ -51,14 +50,13 @@ class Bucket {
    * @returns {Promise}
    */
   configurePolicy() {
-
     const policy = this.options.policy || {
       Version: '2008-10-17',
       Statement: [
         {
           Sid: 'PublicReadGetObject',
           Effect: 'Allow',
-          Principal: {'AWS': '*'},
+          Principal: {AWS: '*'},
           Action: 's3:GetObject',
           Resource: `arn:aws:s3:::${this.bucket}/*`
         }
@@ -73,21 +71,23 @@ class Bucket {
    * @returns {Promise}
    */
   configureWebsite() {
-
     //TODO: configure more options http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketWebsite-property
     const websiteConfig = this.options.websiteConfig || {
       IndexDocument: {Suffix: 'index.html'},
       ErrorDocument: {Key: '404.html'}
     };
 
-    return this.s3.putBucketWebsite({WebsiteConfiguration: websiteConfig}).promise();
+    return this.s3
+      .putBucketWebsite({WebsiteConfiguration: websiteConfig})
+      .promise();
   }
 
   /**
    * List all example in the bucket
    * @returns {Promise.<Array.<String>>}
    */
-  list() { //TODO: handle pagination
+  list() {
+    //TODO: handle pagination
     return this.s3.listObjectsV2().promise().then(res => res.Contents);
   }
 
@@ -120,7 +120,6 @@ class Bucket {
   delete(key) {
     return this.s3.deleteObject({Key: key}).promise();
   }
-
 }
 
 module.exports = Bucket;

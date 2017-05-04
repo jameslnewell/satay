@@ -55,7 +55,7 @@
   },
   "lint-staged": {
     "*.js": [
-      "prettier --write --singleQuote",
+      "prettier --write --single-quote --no-bracket-spacing",
       "git add"
     ]
   },
