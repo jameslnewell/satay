@@ -1,5 +1,10 @@
 # Change log
 
+## 1.1.6
+
+- fixed file permissions to be public
+- fixed doco to mention content-type and acl params
+
 ## 1.1.5
 
 - fix badge links
