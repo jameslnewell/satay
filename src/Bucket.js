@@ -101,7 +101,8 @@ class Bucket {
   upload(file, key, options) {
     const params = Object.assign(
       {
-        ContentType: mime.lookup(file)
+        ContentType: mime.lookup(file),
+        ACL: 'public-read'
       },
       omit(options, ['Bucket', 'Body', 'Key']),
       {

@@ -118,7 +118,7 @@ $ satay --config=satay.config.js --force-upload
   - `include` - *Optional*. A `RegExp` or `function`. A regular expression or function to filter which files are included.
   - `exclude` - *Optional*. A `RegExp` or `function`. A regular expression or function to filter which files are excluded.
   - `prefix` - *Optional*. A `string`. The prefix that will be prepended to the object key. Defaults to `""`.
-  - `params` - *Optional*. An `object`. The additional parameters to pass to `S3.putObject()`. Defaults to `{}`.
+  - `params` - *Optional*. An `object`. The additional parameters to pass to `S3.putObject()`. Defaults to `{ContentType: mime.lookup(filename), ACL: 'public-read'}`.
 - `policy` - *Optional*. An `object`. The AWS policy. Defaults to public read access for all files.
 - `websiteConfig` - *Optional*. An `object`. The AWS website configuration. Uses `index.html` as the default `IndexDocument` and `404.html` as the default `ErrorDocument`.
 
@@ -135,7 +135,7 @@ satay(bucket: String, groups: Array<Group>, options: Object): Promise
   - `include` - *Optional*. A `RegExp` or `function`. A regular expression or function to filter which files are included.
   - `exclude` - *Optional*. A `RegExp` or `function`. A regular expression or function to filter which files are excluded.
   - `prefix` - *Optional*. A `string`. The prefix that will be prepended to the object key. Defaults to `""`.
-  - `params` - *Optional*. An `object`. The additional parameters to pass to `S3.putObject()`. Defaults to `{}`.
+  - `params` - *Optional*. An `object`. The additional parameters to pass to `S3.putObject()`. Defaults to `{ContentType: mime.lookup(filename), ACL: 'public-read'}`.
 - `options` - *Optional*. An `object`. Additional options.
   - `region` - *Optional*. A `string`. The bucket region. Defaults to the region defined elsewhere by [AWS configuration](http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/configuring-the-jssdk.html).
   - `policy` - *Optional*. An `object`. The AWS policy. Defaults to public read access for all files.
