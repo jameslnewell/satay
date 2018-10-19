@@ -1,8 +1,7 @@
 
 module.exports = {
 
-  bucket: 'jameslnewell.id',
-  region: 'ap-southeast-2',
+  bucket: 'jameslnewell.me',
 
   groups: [
 

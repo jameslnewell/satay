@@ -1,5 +1,25 @@
 # Change log
 
+## 2.X.X
+
+- rewritten in `typescript`
+- changed how `prefix` is handled - not just prefixed but only those files on the bucket are compared
+
+### CLI
+
+- load config from the AWS CLI confg files
+- removed `--force-upload`
+
+### API
+
+- renamed `forceUpload` to `shouldUploadUnmodifiedObjects`
+- renamed `websiteConfig` to `website`
+- removed `region` to rely on AWS configuration instead
+- changed the `satay` API to no longer output to the console, instead it returns
+- added `shouldCreateBucket`
+- added `shouldConfigureBucket`
+- added `shouldDeleteDeletedObjects`
+
 ## 1.1.6
 
 - fixed file permissions to be public
