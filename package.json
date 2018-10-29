@@ -50,8 +50,12 @@
     "watch": "node-scripts build --watch",
     "test": "node-scripts test",
     "example": "node-scripts example",
-    "precommit": "lint-staged",
     "prepublishOnly": "npm run build && npm run test"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "lint-staged": {
     "*.{ts,md,json}": [
