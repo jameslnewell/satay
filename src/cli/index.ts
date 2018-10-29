@@ -7,11 +7,37 @@ process.env.AWS_SDK_LOAD_CONFIG = '1';
 import * as path from 'path';
 import * as yargs from 'yargs';
 import chalk from 'chalk';
-import satay, {Options, Group} from '../api';
+import satay, {Options, Group, ObjectDiffStatus} from '../api';
 
 interface Config extends Options {
   bucket: string;
   groups: Group[];
+}
+
+function isStatusActioned(status: ObjectDiffStatus, options: Options) {
+  if (
+    status === ObjectDiffStatus.ADDED ||
+    status === ObjectDiffStatus.MODIFIED
+  ) {
+    return true;
+  }
+
+  if (
+    status === ObjectDiffStatus.UNMODIFIED &&
+    options.shouldUploadUnmodifiedObjects
+  ) {
+    return true;
+  }
+
+  if (
+    status === ObjectDiffStatus.DELETED &&
+    (options.shouldDeleteDeletedObjects === undefined ||
+      options.shouldDeleteDeletedObjects === true)
+  ) {
+    return true;
+  }
+
+  return false;
 }
 
 const argv = yargs.help().options({
@@ -56,39 +82,39 @@ const relativeGroups = groups.map(group =>
   })
 );
 
-satay(bucket, relativeGroups, options).then(
-  ({url, diff, bucketWasCreated, bucketWasConfigured}) => {
-    if (bucketWasCreated) {
-      console.log(chalk.cyan(`  • 'Bucket created'`));
-    }
-
-    if (bucketWasConfigured) {
-      console.log(chalk.cyan(`  • 'Bucket configured'`));
-    }
-
-    // print the diff
+let bucketURL: string;
+satay(bucket, relativeGroups, options)
+  .on('bucket:created', () => console.log(chalk.cyan(`  • Bucket created`)))
+  .on('bucket:configured', () =>
+    console.log(chalk.cyan(`  • Bucket configured`))
+  )
+  .on('url', ({url}) => (bucketURL = url))
+  .on('diff', ({diff}) => {
     console.log();
     Object.keys(diff)
       .sort()
       .forEach(key => {
-        if (!diff[key]) {
-          console.log(`     ${key}`);
+        const status = diff[key];
+        if (isStatusActioned(status, options)) {
+          console.log(chalk.bold(`   ${status || ' '}  ${key}`));
         } else {
-          console.log(chalk.bold(`  ${diff[key]}  ${key}`));
+          console.log(`   ${status || ' '}  ${key}`);
         }
       });
-
+  })
+  .on('done', () => {
     console.log();
     console.log(chalk.green(`  🎉  Upload complete.`));
     console.log();
 
-    console.log(`  🔗  ${chalk.blue(chalk.underline(url))}`);
+    console.log(`  🔗  ${chalk.blue(chalk.underline(bucketURL))}`);
     console.log();
-  },
-  (error: Error) => {
-    console.log();
-    console.log(chalk.red(`  ❌  ${error.message}:\n\n       ${error.stack}`));
-    console.log();
+  })
+  .on('error', error => {
+    console.error();
+    console.error(
+      chalk.red(`  ❌  ${error.message}:\n\n       ${error.stack}`)
+    );
+    console.error(error);
     process.exitCode = 1;
-  }
-);
+  });

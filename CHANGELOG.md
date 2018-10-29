@@ -15,7 +15,7 @@
 - renamed `forceUpload` to `shouldUploadUnmodifiedObjects`
 - renamed `websiteConfig` to `website`
 - removed `region` to rely on AWS configuration instead
-- changed the `satay` API to no longer output to the console, instead it returns
+- changed the `satay` API to no longer output to the console, instead it returns an emitter
 - added `shouldCreateBucket`
 - added `shouldConfigureBucket`
 - added `shouldDeleteDeletedObjects`

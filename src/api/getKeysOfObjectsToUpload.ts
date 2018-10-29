@@ -8,7 +8,8 @@ export function getKeysOfObjectsToUpload(
     if (
       diff[key] === ObjectDiffStatus.ADDED ||
       diff[key] === ObjectDiffStatus.MODIFIED ||
-      shouldUploadUnmodifiedObjects
+      (diff[key] === ObjectDiffStatus.UNMODIFIED &&
+        shouldUploadUnmodifiedObjects)
     ) {
       accum = [...accum, key];
     }

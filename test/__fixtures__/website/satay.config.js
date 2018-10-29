@@ -2,7 +2,6 @@
 module.exports = {
 
   bucket: 'jameslnewell.me',
-
   groups: [
 
     {
@@ -15,7 +14,7 @@ module.exports = {
       source: './static',
       exclude: /\.html$/,
       params: {
-        CacheControl: `Cache-Control: max-age=${60*60*24*365.25}, public`
+        CacheControl: `max-age=${60*60*24*365.25}, public`
       }
     }
 

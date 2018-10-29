@@ -1,4 +1,5 @@
 import {calcDiff} from './calcDiff';
+import {ObjectDiffStatus} from './types';
 
 describe('calcDiff()', () => {
   it('should mark a file as added when the file is present on disk but is not present in the bucket', () => {
@@ -8,7 +9,7 @@ describe('calcDiff()', () => {
     const diff = calcDiff(filesOnDisk, filesInBucket);
 
     expect(diff).toMatchObject({
-      'index.html': 'A'
+      'index.html': ObjectDiffStatus.ADDED
     });
   });
 
@@ -19,7 +20,7 @@ describe('calcDiff()', () => {
     const diff = calcDiff(filesOnDisk, filesInBucket);
 
     expect(diff).toMatchObject({
-      'index.html': 'M'
+      'index.html': ObjectDiffStatus.MODIFIED
     });
   });
 
@@ -30,7 +31,7 @@ describe('calcDiff()', () => {
     const diff = calcDiff(filesOnDisk, filesInBucket);
 
     expect(diff).toMatchObject({
-      'index.html': undefined
+      'index.html': ObjectDiffStatus.UNMODIFIED
     });
   });
 
@@ -41,7 +42,7 @@ describe('calcDiff()', () => {
     const diff = calcDiff(filesOnDisk, filesInBucket);
 
     expect(diff).toMatchObject({
-      'index.html': 'D'
+      'index.html': ObjectDiffStatus.DELETED
     });
   });
 });

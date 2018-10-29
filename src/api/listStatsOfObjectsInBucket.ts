@@ -1,15 +1,18 @@
 import {Group, ObjectStatsMap} from './types';
 import * as AWS from 'aws-sdk';
+import {match} from './match';
 
 async function listObjectsInGroup(
   s3: AWS.S3,
   bucket: string,
   group: Group
 ): Promise<ObjectStatsMap> {
+  const {prefix, include, exclude} = group;
+
   const output = await s3
     .listObjectsV2({
       Bucket: bucket,
-      Prefix: group.prefix
+      Prefix: prefix
     })
     .promise();
 
@@ -20,9 +23,22 @@ async function listObjectsInGroup(
     );
   }
 
-  // TODO: filter by group include and exclude??
+  const filter = match({include, exclude});
   const map: ObjectStatsMap = {};
-  output.Contents.filter(object => Boolean(object.Key)).forEach(object => {
+  output.Contents.filter(object => {
+    // check the object has a key
+    if (!object.Key) {
+      return false;
+    }
+
+    // check the object exists in the same path (because "static" also returns results for "staticxx")
+    if (prefix && !object.Key.startsWith(`${prefix}/`)) {
+      return false;
+    }
+
+    // check the object is included in the group
+    return filter(object.Key);
+  }).forEach(object => {
     map[object.Key] = {
       hash: object.ETag.replace(/"([a-zA-Z0-9]+)"/, '$1'),
       size: object.Size
@@ -43,7 +59,7 @@ export async function listStatsOfObjectsInBucket(
     // check if any objects appear in more than one group
     Object.keys(map).forEach(key => {
       if (flattened[key]) {
-        new Error(`File "${key}" is matched by multiple groups.`);
+        throw new Error(`File "${key}" is matched by multiple groups.`);
       }
     });
 

@@ -26,6 +26,10 @@ export interface ObjectDiffStatusMap {
 
 export type ObjectParams = Partial<AWS.S3.PutObjectRequest>;
 
+export interface ObjectParamsMap {
+  [key: string]: ObjectParams;
+}
+
 export type Filter = string | RegExp | ((key: string) => boolean);
 
 export interface Group {
@@ -43,11 +47,4 @@ export interface Options {
   shouldConfigureBucket?: boolean;
   shouldDeleteDeletedObjects?: boolean;
   shouldUploadUnmodifiedObjects?: boolean;
-}
-
-export interface Output {
-  url: string;
-  diff: ObjectDiffStatusMap;
-  bucketWasCreated: boolean;
-  bucketWasConfigured: boolean;
 }

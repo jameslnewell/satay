@@ -1,9 +1,5 @@
-import {Group, ObjectParams} from './types';
+import {Group, ObjectParamsMap} from './types';
 import {match} from './match';
-
-export interface ObjectParamsMap {
-  [key: string]: ObjectParams;
-}
 
 export function getParamsOfObjectsToUpload(
   keysOfObjectsToUpload: string[],

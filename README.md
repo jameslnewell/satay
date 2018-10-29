@@ -36,10 +36,7 @@ A utility for uploading static sites to AWS S3.
          source: './static',
          exclude: /\.html$/,
          params: {
-           CacheControl: `Cache-Control: max-age=${60 *
-             60 *
-             24 *
-             365.25}, public`
+           CacheControl: `max-age=${60 * 60 * 24 * 365.25}, public`
          }
        }
      ]
@@ -79,7 +76,7 @@ A utility for uploading static sites to AWS S3.
        source: './static',
        exclude: /\.html$/,
        params: {
-         CacheControl: `Cache-Control: max-age=${60 * 60 * 24 * 365.25}, public`
+         CacheControl: `max-age=${60 * 60 * 24 * 365.25}, public`
        }
      }
    ]);

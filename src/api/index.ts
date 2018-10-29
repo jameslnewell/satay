@@ -1,6 +1,7 @@
 import * as AWS from 'aws-sdk';
 import {VError} from 'verror';
-import {Group, Options, Output, ObjectStatsMap, FileObjectStats} from './types';
+import {Group, Options, ObjectStatsMap, FileObjectStats} from './types';
+import {Emitter} from './Emitter';
 import {createBucket} from './createBucket';
 import {configureBucket} from './configureBucket';
 import {listStatsOfObjectsOnDisk} from './listStatsOfObjectsOnDisk';
@@ -15,12 +16,13 @@ import {deleteObjectsFromBucket} from './deleteObjectsFromBucket';
 import {getBucketURL} from './getBucketURL';
 export * from './types';
 
-export default async function(
+export default function(
   bucket: string,
   groups: Group[],
   options: Options = {}
-): Promise<Output> {
+): Emitter {
   const s3 = new AWS.S3();
+  const emitter = new Emitter();
   const {
     policy,
     website,
@@ -29,104 +31,133 @@ export default async function(
     shouldUploadUnmodifiedObjects = false,
     shouldDeleteDeletedObjects = true
   } = options;
-  let bucketWasCreated: boolean = false;
-  let bucketWasConfigured: boolean = false;
 
-  if (groups.length === 0) {
-    throw new VError('No files for upload.');
-  }
-
-  // list files on disk
-  let statsOfObjectsOnDisk: ObjectStatsMap<FileObjectStats> = {};
-  try {
-    statsOfObjectsOnDisk = await listStatsOfObjectsOnDisk(groups);
-  } catch (listDiskError) {
-    throw new VError(listDiskError, 'Unable to list files on disk');
-  }
-
-  // list files in the bucket
-  let statsOfObjectsInBucket: ObjectStatsMap = {};
-  try {
-    statsOfObjectsInBucket = await listStatsOfObjectsInBucket(
-      s3,
-      bucket,
-      groups
-    );
-  } catch (listBucketError) {
-    if (!listBucketError || listBucketError.code !== 'NoSuchBucket') {
-      throw new VError(listBucketError, 'Unable to list files in bucket');
+  setImmediate(async () => {
+    if (groups.length === 0) {
+      emitter.emit('error', new VError('No files for upload.'));
+      return;
     }
-    if (shouldCreateBucket) {
-      try {
-        await createBucket(s3, bucket);
-        bucketWasCreated = true;
-      } catch (createBucketError) {
-        throw new VError(createBucketError, 'Unable to create bucket');
-      }
-      if (shouldConfigureBucket) {
-        try {
-          await configureBucket(s3, bucket, {policy, website});
-          bucketWasConfigured = true;
-        } catch (configureBucketError) {
-          throw new VError(configureBucketError, 'Unable to configure bucket');
-        }
-      }
-    } else {
-      throw listBucketError;
-    }
-  }
 
-  // diff the objects on disk and the objects in the bucket
-  const diff = calcDiff(statsOfObjectsOnDisk, statsOfObjectsInBucket);
-
-  // upload objects to the bucket
-  const keysOfObjectsToUpload = getKeysOfObjectsToUpload(
-    diff,
-    shouldUploadUnmodifiedObjects
-  );
-  const statsOfObjectsToUpload = getStatsOfObjectsToUpload(
-    keysOfObjectsToUpload,
-    statsOfObjectsOnDisk
-  );
-  const paramsOfObjectsToUpload = getParamsOfObjectsToUpload(
-    keysOfObjectsToUpload,
-    groups
-  );
-  if (Object.keys(statsOfObjectsToUpload).length) {
+    // list files on disk
+    let statsOfObjectsOnDisk: ObjectStatsMap<FileObjectStats> = {};
     try {
-      await uploadObjectsToBucket(
+      statsOfObjectsOnDisk = await listStatsOfObjectsOnDisk(groups);
+    } catch (listDiskError) {
+      emitter.emit(
+        'error',
+        new VError(listDiskError, 'Unable to list files on disk')
+      );
+      return;
+    }
+
+    // list files in the bucket
+    let statsOfObjectsInBucket: ObjectStatsMap = {};
+    try {
+      statsOfObjectsInBucket = await listStatsOfObjectsInBucket(
         s3,
         bucket,
-        statsOfObjectsToUpload,
-        paramsOfObjectsToUpload
+        groups
       );
-    } catch (uploadError) {
-      throw new VError(uploadError, 'Unable to upload files to bucket');
+    } catch (listBucketError) {
+      if (!listBucketError || listBucketError.code !== 'NoSuchBucket') {
+        emitter.emit(
+          'error',
+          new VError(listBucketError, 'Unable to list files in bucket')
+        );
+        return;
+      }
+      if (shouldCreateBucket) {
+        try {
+          await createBucket(s3, bucket);
+          emitter.emit('bucket:created');
+        } catch (createBucketError) {
+          emitter.emit(
+            'error',
+            new VError(createBucketError, 'Unable to create bucket')
+          );
+          return;
+        }
+        if (shouldConfigureBucket) {
+          try {
+            await configureBucket(s3, bucket, {policy, website});
+            emitter.emit('bucket:configured');
+          } catch (configureBucketError) {
+            emitter.emit(
+              'error',
+              new VError(configureBucketError, 'Unable to configure bucket')
+            );
+            return;
+          }
+        }
+      } else {
+        throw listBucketError;
+      }
     }
-  }
 
-  // delete objects from the bucket
-  const keysOfObjectsToDelete = getKeysOfObjectsToDelete(diff);
-  if (shouldDeleteDeletedObjects && keysOfObjectsToDelete.length) {
+    // get the bucket URL
     try {
-      await deleteObjectsFromBucket(s3, bucket, keysOfObjectsToDelete);
-    } catch (uploadError) {
-      throw new VError(uploadError, 'Unable to delete files from bucket');
+      const bucketURL = await getBucketURL(s3, bucket);
+      emitter.emit('url', {url: bucketURL});
+    } catch (describeError) {
+      emitter.emit(
+        'error',
+        new VError(describeError, 'Unable to get bucket region')
+      );
     }
-  }
 
-  // get the bucket URL
-  let bucketURL: string;
-  try {
-    bucketURL = await getBucketURL(s3, bucket);
-  } catch (describeError) {
-    throw new VError(describeError, 'Unable to get bucket region');
-  }
+    // diff the objects on disk and the objects in the bucket
+    const diff = calcDiff(statsOfObjectsOnDisk, statsOfObjectsInBucket);
+    emitter.emit('diff', {diff});
 
-  return {
-    url: bucketURL,
-    diff,
-    bucketWasCreated,
-    bucketWasConfigured
-  };
+    // upload objects to the bucket
+    const keysOfObjectsToUpload = getKeysOfObjectsToUpload(
+      diff,
+      shouldUploadUnmodifiedObjects
+    );
+    const statsOfObjectsToUpload = getStatsOfObjectsToUpload(
+      keysOfObjectsToUpload,
+      statsOfObjectsOnDisk
+    );
+    const paramsOfObjectsToUpload = getParamsOfObjectsToUpload(
+      keysOfObjectsToUpload,
+      groups
+    );
+    if (Object.keys(statsOfObjectsToUpload).length) {
+      try {
+        await uploadObjectsToBucket(
+          s3,
+          bucket,
+          statsOfObjectsToUpload,
+          paramsOfObjectsToUpload
+        );
+      } catch (uploadError) {
+        emitter.emit(
+          'error',
+          new VError(uploadError, 'Unable to upload files to bucket')
+        );
+        return;
+      }
+    }
+
+    // delete objects from the bucket
+    const keysOfObjectsToDelete = getKeysOfObjectsToDelete(
+      diff,
+      shouldDeleteDeletedObjects
+    );
+    if (keysOfObjectsToDelete.length) {
+      try {
+        await deleteObjectsFromBucket(s3, bucket, keysOfObjectsToDelete);
+      } catch (uploadError) {
+        emitter.emit(
+          'error',
+          new VError(uploadError, 'Unable to delete files from bucket')
+        );
+        return;
+      }
+    }
+
+    emitter.emit('done');
+  });
+
+  return emitter;
 }

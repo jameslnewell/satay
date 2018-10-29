@@ -12,14 +12,16 @@ export async function uploadObjectsToBucket(
   await Promise.all(
     Object.keys(statsOfObjectsToUpload).map(keyOfObjectToUpload => {
       const statsOfObjectToUpload = statsOfObjectsToUpload[keyOfObjectToUpload];
-      s3.upload({
-        ContentType: mime.lookup(statsOfObjectToUpload.path) || undefined,
-        ACL: 'public-read',
-        ...paramsOfObjectsToUpload[keyOfObjectToUpload],
-        Bucket: bucket,
-        Key: keyOfObjectToUpload,
-        Body: fs.createReadStream(statsOfObjectToUpload.path)
-      }).promise();
+      return s3
+        .upload({
+          ContentType: mime.lookup(statsOfObjectToUpload.path) || undefined,
+          ACL: 'public-read',
+          ...paramsOfObjectsToUpload[keyOfObjectToUpload],
+          Bucket: bucket,
+          Key: keyOfObjectToUpload,
+          Body: fs.createReadStream(statsOfObjectToUpload.path)
+        })
+        .promise();
     })
   );
 }

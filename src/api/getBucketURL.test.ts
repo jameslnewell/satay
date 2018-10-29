@@ -8,15 +8,9 @@ describe('getBucketURL()', () => {
   afterEach(() => AWSMock.restore());
 
   it('should return a URL when there is a key', async () => {
-    AWSMock.mock(
-      'S3',
-      'getBucketLocation',
-      (p, cb) =>
-        console.log(p) ||
-        cb(null, {
-          LocationConstraint: 'ap-southeast-2'
-        })
-    );
+    AWSMock.mock('S3', 'getBucketLocation', {
+      LocationConstraint: 'ap-southeast-2'
+    });
 
     const s3 = new AWS.S3();
     expect(await getBucketURL(s3, 'jameslnewell.me', 'index.html')).toEqual(
