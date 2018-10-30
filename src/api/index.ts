@@ -103,6 +103,7 @@ export default function(
         'error',
         new VError(describeError, 'Unable to get bucket region')
       );
+      return;
     }
 
     // diff the objects on disk and the objects in the bucket

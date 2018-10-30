@@ -1,0 +1,1 @@
+- mock AWS and test events emitted by satay
