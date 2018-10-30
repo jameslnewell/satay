@@ -3,11 +3,11 @@
 ## 2.X.X
 
 - rewritten in `typescript`
-- changed how `prefix` is handled - not just prefixed but only those files on the bucket are compared
+- changed how `prefix` is handled - not just added to the upload path but it is now used to compare objects in the bucket
 
 ### CLI
 
-- load config from the AWS CLI confg files
+- changed: now loads configuration from the AWS-CLI configuration files in addition to the AWS-SDK configuration
 - removed `--force-upload`
 
 ### API

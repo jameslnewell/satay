@@ -27,7 +27,6 @@ export function calcDiff(
 
   // calculate whether files on disk are "deleted"
   Object.keys(objectStatsMap2).forEach(keyInBucket => {
-    const objectInBucket = objectStatsMap2[keyInBucket];
     const fileOnDisk = objectStatsMap1[keyInBucket];
 
     if (!fileOnDisk) {

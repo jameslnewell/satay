@@ -62,7 +62,7 @@ export async function listStatsOfObjectsOnDisk(
     // check if any objects appear in more than one group
     Object.keys(map).forEach(key => {
       if (flattened[key]) {
-        new Error(`File "${key}" is matched by multiple groups.`);
+        throw new Error(`File "${key}" is matched by multiple groups.`);
       }
     });
 

@@ -7,7 +7,7 @@ export function getKeysOfObjectsToDelete(
   if (!shouldDeleteDeletedObjects) {
     return [];
   }
-  return Object.keys(diff).reduce((accum, key) => {
+  return Object.keys(diff).reduce<string[]>((accum, key) => {
     if (diff[key] === ObjectDiffStatus.DELETED) {
       accum = [...accum, key];
     }

@@ -1,5 +1,5 @@
 import {EventEmitter} from 'events';
-import {ObjectDiffStatusMap, ObjectDiffStatus, ObjectStats} from './types';
+import {ObjectDiffStatusMap} from './types';
 
 export interface UrlEvent {
   url: string;

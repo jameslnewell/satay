@@ -23,6 +23,11 @@ async function listObjectsInGroup(
     );
   }
 
+  // check the bucket contains objects
+  if (!output.Contents) {
+    return {};
+  }
+
   const filter = match({include, exclude});
   const map: ObjectStatsMap = {};
   output.Contents.filter(object => {
@@ -39,9 +44,14 @@ async function listObjectsInGroup(
     // check the object is included in the group
     return filter(object.Key);
   }).forEach(object => {
+    // check the object has a key
+    if (!object.Key) {
+      return;
+    }
+
     map[object.Key] = {
-      hash: object.ETag.replace(/"([a-zA-Z0-9]+)"/, '$1'),
-      size: object.Size
+      hash: object.ETag ? object.ETag.replace(/"([a-zA-Z0-9]+)"/, '$1') : '',
+      size: object.Size ? object.Size : 0
     };
   });
   return map;

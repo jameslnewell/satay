@@ -23,5 +23,5 @@ export async function uploadObjectsToBucket(
         })
         .promise();
     })
-  );
+  ); // TODO: listen for and emit progress events (httpUploadProgress) https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3/ManagedUpload.html
 }

@@ -5,10 +5,8 @@ describe('satay', () => {
   jest.setTimeout(10000);
 
   it.skip('should upload files', async () => {
-    const result = await satay({
-      directory: path.join(__dirname, './__fixtures__'),
-      bucket: 'platform-static-development'
-    });
-    console.log('RESULT', result);
+    const emitter = satay('jameslnewell.me', [
+      {source: path.join(__dirname, './__fixtures__')}
+    ]);
   });
 });

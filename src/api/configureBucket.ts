@@ -24,7 +24,7 @@ async function putBucketPolicy(s3: AWS.S3, bucket: string, policy?: {}) {
 async function putBucketWebsite(
   s3: AWS.S3,
   bucket: string,
-  website: AWS.S3.WebsiteConfiguration
+  website?: AWS.S3.WebsiteConfiguration
 ) {
   //TODO: configure more options http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketWebsite-property
   return s3

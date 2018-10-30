@@ -63,23 +63,29 @@ A utility for uploading static sites to AWS S3.
    `upload.js`
 
    ```js
-   const satay = require('satay');
+   import satay from 'satay';
 
-   satay('jameslnewell.me', [
-     {
-       source: './static',
-       include: /\.html$/
-     },
+   satay(
+     'jameslnewell.me',
+     [
+       {
+         source: './static',
+         include: /\.html$/
+       },
 
-     //cache finger-printed assets for up to 1 year
-     {
-       source: './static',
-       exclude: /\.html$/,
-       params: {
-         CacheControl: `max-age=${60 * 60 * 24 * 365.25}, public`
+       //cache finger-printed assets for up to 1 year
+       {
+         source: './static',
+         exclude: /\.html$/,
+         params: {
+           CacheControl: `max-age=${60 * 60 * 24 * 365.25}, public`
+         }
        }
+     ],
+     {
+       shouldUploadUnmodifiedObjects: true
      }
-   ]);
+   );
    ```
 
 3. Configure your [AWS credentials](http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/configuring-the-jssdk.html)
@@ -92,7 +98,7 @@ A utility for uploading static sites to AWS S3.
 ## CLI
 
 ```bash
-$ satay --config=satay.config.js --force-upload
+$ satay --config=satay.config.js
 ```
 
 **Flags:**
@@ -112,6 +118,10 @@ $ satay --config=satay.config.js --force-upload
   - `params` - _Optional_. An `object`. The additional parameters to pass to `S3.putObject()`. Defaults to `{ContentType: mime.lookup(filename), ACL: 'public-read'}`.
 - `policy` - _Optional_. An `object`. The AWS policy. Defaults to public read access for all files.
 - `website` - _Optional_. An `object`. The AWS website configuration. Uses `index.html` as the default `IndexDocument` and `404.html` as the default `ErrorDocument`.
+- `shouldCreateBucket` - _Optional_. A `boolean`. Whether the bucket should be created if it doesn't exist.
+- `shouldConfigureBucket` - _Optional_. A `boolean`. Whether the bucket should be configured as a public website if it doesn't exist.
+- `shouldUploadUnmodifiedObjects` - _Optional_. A `boolean`. Whether the unmodified files on disk should be uploaded even though they are the same as the files in the bucket.
+- `shouldDeleteDeletedObjects` - _Optional_. A `boolean`. Whether the objects in the bucket should be deleted when the files are deleted from disk.
 
 ## API
 
@@ -131,6 +141,10 @@ satay(bucket: String, groups: Array<Group>, options: Object): Promise
 - `options` - _Optional_. An `object`. Additional options.
   - `policy` - _Optional_. An `object`. The AWS policy. Defaults to public read access for all files.
   - `website` - _Optional_. An `object`. The AWS website configuration. Uses `index.html` as the default `IndexDocument` and `404.html` as the default `ErrorDocument`.
+  - `shouldCreateBucket` - _Optional_. A `boolean`. Whether the bucket should be created if it doesn't exist.
+  - `shouldConfigureBucket` - _Optional_. A `boolean`. Whether the bucket should be configured as a public website if it doesn't exist.
+  - `shouldUploadUnmodifiedObjects` - _Optional_. A `boolean`. Whether the unmodified files on disk should be uploaded even though they are the same as the files in the bucket.
+  - `shouldDeleteDeletedObjects` - _Optional_. A `boolean`. Whether the objects in the bucket should be deleted when the files are deleted from disk.
 
 ## Change log
 

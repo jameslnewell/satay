@@ -1,4 +1,5 @@
 import * as AWS from 'aws-sdk';
+// @ts-ignore
 import * as AWSMock from 'aws-sdk-mock';
 import {getBucketURL} from './getBucketURL';
 
