@@ -19,7 +19,7 @@ async function listObjectsInGroup(
   //TODO: handle pagination
   if (output.IsTruncated) {
     throw new Error(
-      'satay: Too many objects returned and pagination is not supported yet.'
+      'satay: Too many objects returned and pagination is not supported yet. Please submit a PR 😀'
     );
   }
 

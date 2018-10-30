@@ -5,7 +5,11 @@ export async function deleteObjectsFromBucket(
   bucket: string,
   keysOfObjectsToDelete: string[]
 ): Promise<void> {
-  // TODO: handle more than 1000 objects
+  if (keysOfObjectsToDelete.length > 1000) {
+    throw new Error(
+      'satay: Too many objects to delete and multiple calls are not supported yet. Please submit a PR 😀'
+    );
+  }
   await s3
     .deleteObjects({
       Bucket: bucket,
