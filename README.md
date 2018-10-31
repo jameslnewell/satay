@@ -131,7 +131,7 @@ satay(bucket: String, groups: Array<Group>, options: Object): Promise
 
 **Parameters:**
 
-- `bucket` - _Optional_. A `string`. The name of the bucket.
+- `bucket` - _Required_. A `string`. The name of the bucket.
 - `groups` - _Required_. An `array` of file groupings.
   - `source` - _Optional_. A `string`. The directory that will be searched. Defaults to `process.cwd()`.
   - `include` - _Optional_. A `RegExp` or `function`. A regular expression or function to filter which files are included.
