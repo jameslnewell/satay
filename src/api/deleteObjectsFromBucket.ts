@@ -15,8 +15,7 @@ export async function deleteObjectsFromBucket(
   }
   keysOfObjectsToDelete.forEach(key => {
     emitter.emit('object:delete', key, {
-      progress: 0,
-      status: ObjectDiffStatus.DELETED
+      progress: 0
     });
   });
   const {Deleted} = await s3
@@ -32,8 +31,7 @@ export async function deleteObjectsFromBucket(
   Deleted.forEach(({Key, VersionId}) => {
     emitter.emit('object:delete', Key, {
       progress: 100,
-      version: VersionId,
-      status: ObjectDiffStatus.DELETED
+      version: VersionId
     });
   });
 }

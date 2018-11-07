@@ -11,7 +11,6 @@ export interface DiffEvent {
 
 export interface ObjectEvent {
   progress: number;
-  status: ObjectDiffStatus;
   version?: string;
 }
 

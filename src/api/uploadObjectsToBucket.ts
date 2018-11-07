@@ -1,12 +1,7 @@
 import * as fs from 'fs';
 import * as AWS from 'aws-sdk';
 import * as mime from 'mime-types';
-import {
-  ObjectStatsMap,
-  FileObjectStats,
-  ObjectParamsMap,
-  ObjectDiffStatus
-} from './types';
+import {ObjectStatsMap, FileObjectStats, ObjectParamsMap} from './types';
 import {Emitter} from './Emitter';
 
 // FIXME: ManagedUpload.SendData _does_ include a VersionId, AWS types need to be fixed.
@@ -22,8 +17,7 @@ export async function uploadObjectsToBucket(
   await Promise.all(
     Object.keys(statsOfObjectsToUpload).map(async keyOfObjectToUpload => {
       emitter.emit('object:upload', keyOfObjectToUpload, {
-        progress: 0,
-        status: ObjectDiffStatus.ADDED
+        progress: 0
       });
       const statsOfObjectToUpload = statsOfObjectsToUpload[keyOfObjectToUpload];
       const {VersionId} = (await s3
@@ -38,8 +32,7 @@ export async function uploadObjectsToBucket(
         .promise()) as SendDataWithVersion;
       emitter.emit('object:upload', keyOfObjectToUpload, {
         progress: 100,
-        version: VersionId,
-        status: ObjectDiffStatus.ADDED
+        version: VersionId
       });
     })
   ); // TODO: listen for and emit progress events (httpUploadProgress) https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3/ManagedUpload.html
