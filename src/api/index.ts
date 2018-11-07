@@ -129,7 +129,8 @@ export default function(
           s3,
           bucket,
           statsOfObjectsToUpload,
-          paramsOfObjectsToUpload
+          paramsOfObjectsToUpload,
+          emitter
         );
       } catch (uploadError) {
         emitter.emit(
