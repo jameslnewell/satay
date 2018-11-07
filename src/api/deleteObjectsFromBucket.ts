@@ -28,10 +28,16 @@ export async function deleteObjectsFromBucket(
       }
     })
     .promise();
-  Deleted.forEach(({Key, VersionId}) => {
-    emitter.emit('object:delete', Key, {
+  if (!Deleted) {
+    return;
+  }
+  Deleted.forEach(deletedObject => {
+    if (!deletedObject || !deletedObject.Key) {
+      return;
+    }
+    emitter.emit('object:delete', deletedObject.Key, {
       progress: 100,
-      version: VersionId
+      version: deletedObject.VersionId
     });
   });
 }
