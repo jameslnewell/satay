@@ -148,7 +148,12 @@ export default function(
     );
     if (keysOfObjectsToDelete.length) {
       try {
-        await deleteObjectsFromBucket(s3, bucket, keysOfObjectsToDelete);
+        await deleteObjectsFromBucket(
+          s3,
+          bucket,
+          keysOfObjectsToDelete,
+          emitter
+        );
       } catch (uploadError) {
         emitter.emit(
           'error',
