@@ -19,6 +19,7 @@
 - added `shouldCreateBucket`
 - added `shouldConfigureBucket`
 - added `shouldDeleteDeletedObjects`
+- added emitted events for `object:upload` and `object:delete`
 
 ## 1.1.6
 
