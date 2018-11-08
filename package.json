@@ -1,6 +1,6 @@
 {
   "name": "satay",
-  "version": "2.0.0-preview.5",
+  "version": "2.0.0-preview.6",
   "description": "A utility for uploading static sites to AWS S3.",
   "keywords": [
     "aws",
