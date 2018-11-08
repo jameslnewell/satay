@@ -1,6 +1,5 @@
 import * as AWS from 'aws-sdk';
 import {Emitter} from './Emitter';
-import {ObjectDiffStatus} from './types';
 
 export async function deleteObjectsFromBucket(
   s3: AWS.S3,
