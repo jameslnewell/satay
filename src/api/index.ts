@@ -11,9 +11,10 @@ import {getKeysOfObjectsToUpload} from './getKeysOfObjectsToUpload';
 import {getStatsOfObjectsToUpload} from './getStatsOfObjectsToUpload';
 import {getParamsOfObjectsToUpload} from './getParamsOfObjectsToUpload';
 import {uploadObjectsToBucket} from './uploadObjectsToBucket';
-import {getKeysOfObjectsToDelete} from './getKeysOfObjectsToDelete';
+import {getStatsOfObjectsToDelete} from './getStatsOfObjectsToDelete';
 import {deleteObjectsFromBucket} from './deleteObjectsFromBucket';
 import {getBucketURL} from './getBucketURL';
+import {getKeysOfObjectsToDelete} from './getKeysOfObjectsToDelete';
 export * from './types';
 
 export default function(
@@ -34,7 +35,10 @@ export default function(
 
   setImmediate(async () => {
     if (groups.length === 0) {
-      emitter.emit('error', new VError('No files for upload.'));
+      emitter.emit(
+        'error',
+        new VError('No groups of files specified for upload.')
+      );
       return;
     }
 
@@ -62,7 +66,7 @@ export default function(
       if (!listBucketError || listBucketError.code !== 'NoSuchBucket') {
         emitter.emit(
           'error',
-          new VError(listBucketError, 'Unable to list files in bucket')
+          new VError(listBucketError, 'Unable to list files in the bucket')
         );
         return;
       }
@@ -73,7 +77,7 @@ export default function(
         } catch (createBucketError) {
           emitter.emit(
             'error',
-            new VError(createBucketError, 'Unable to create bucket')
+            new VError(createBucketError, 'Unable to create the bucket')
           );
           return;
         }
@@ -84,7 +88,7 @@ export default function(
           } catch (configureBucketError) {
             emitter.emit(
               'error',
-              new VError(configureBucketError, 'Unable to configure bucket')
+              new VError(configureBucketError, 'Unable to configure the bucket')
             );
             return;
           }
@@ -101,7 +105,7 @@ export default function(
     } catch (describeError) {
       emitter.emit(
         'error',
-        new VError(describeError, 'Unable to get bucket region')
+        new VError(describeError, 'Unable to get the bucket region')
       );
       return;
     }
@@ -135,7 +139,7 @@ export default function(
       } catch (uploadError) {
         emitter.emit(
           'error',
-          new VError(uploadError, 'Unable to upload files to bucket')
+          new VError(uploadError, 'Unable to upload files to the bucket')
         );
         return;
       }
@@ -146,18 +150,22 @@ export default function(
       diff,
       shouldDeleteDeletedObjects
     );
-    if (keysOfObjectsToDelete.length) {
+    const statsOfObjectsToDelete = getStatsOfObjectsToDelete(
+      keysOfObjectsToDelete,
+      statsOfObjectsInBucket
+    );
+    if (Object.keys(statsOfObjectsToDelete).length) {
       try {
         await deleteObjectsFromBucket(
           s3,
           bucket,
-          keysOfObjectsToDelete,
+          statsOfObjectsToDelete,
           emitter
         );
       } catch (uploadError) {
         emitter.emit(
           'error',
-          new VError(uploadError, 'Unable to delete files from bucket')
+          new VError(uploadError, 'Unable to delete files from the bucket')
         );
         return;
       }

@@ -9,7 +9,7 @@ export interface DiffEvent {
   diff: ObjectDiffStatusMap;
 }
 
-export interface ObjectEvent {
+export interface ObjectEvent extends ObjectStats {
   progress: number;
   version?: string;
 }
@@ -40,10 +40,14 @@ export class Emitter {
   off(event: 'bucket:configured', listener: () => void): this;
   off(event: 'url', listener: (data: UrlEvent) => void): this;
   off(event: 'diff', listener: (data: DiffEvent) => void): this;
-  // off(event: 'object:upload:started', listener: (data: ObjectEvent) => void): this;
-  // off(event: 'object:upload:finished', listener: (data: ObjectEvent) => void): this;
-  // off(event: 'object:delete:started', listener: (data: ObjectEvent) => void): this;
-  // off(event: 'object:delete:finished', listener: (data: ObjectEvent) => void): this;
+  off(
+    event: 'object:upload',
+    listener: (key: string, data: ObjectEvent) => void
+  ): this;
+  off(
+    event: 'object:delete',
+    listener: (key: string, data: ObjectEvent) => void
+  ): this;
   off(event: 'done', listener: () => void): this;
   off(event: 'error', listener: (error: Error) => void): this;
   off(event: string | symbol, listener: (...args: any[]) => void): this {

@@ -11,8 +11,9 @@ export function getKeysOfObjectsToUpload(
       (diff[key] === ObjectDiffStatus.UNMODIFIED &&
         shouldUploadUnmodifiedObjects)
     ) {
-      accum = [...accum, key];
+      return [...accum, key];
+    } else {
+      return accum;
     }
-    return accum;
   }, []);
 }

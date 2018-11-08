@@ -4,8 +4,9 @@ import * as mime from 'mime-types';
 import {ObjectStatsMap, FileObjectStats, ObjectParamsMap} from './types';
 import {Emitter} from './Emitter';
 
-// FIXME: ManagedUpload.SendData _does_ include a VersionId, AWS types need to be fixed.
-type SendDataWithVersion = AWS.S3.ManagedUpload.SendData & {VersionId?: string};
+interface SendData extends AWS.S3.ManagedUpload.SendData {
+  VersionId?: string;
+}
 
 export async function uploadObjectsToBucket(
   s3: AWS.S3,
@@ -16,12 +17,18 @@ export async function uploadObjectsToBucket(
 ) {
   await Promise.all(
     Object.keys(statsOfObjectsToUpload).map(async keyOfObjectToUpload => {
-      emitter.emit('object:upload', keyOfObjectToUpload, {
-        progress: 0
-      });
       const statsOfObjectToUpload = statsOfObjectsToUpload[keyOfObjectToUpload];
-      const {VersionId} = (await s3
-        .upload({
+
+      // emit the first object:upload event
+      emitter.emit('object:upload', keyOfObjectToUpload, {
+        hash: statsOfObjectToUpload.hash,
+        size: statsOfObjectToUpload.size,
+        progress: 0,
+        version: undefined
+      });
+
+      const {VersionId} = await new Promise<SendData>((resolve, reject) => {
+        s3.upload({
           ContentType: mime.lookup(statsOfObjectToUpload.path) || undefined,
           ACL: 'public-read',
           ...paramsOfObjectsToUpload[keyOfObjectToUpload],
@@ -29,11 +36,33 @@ export async function uploadObjectsToBucket(
           Key: keyOfObjectToUpload,
           Body: fs.createReadStream(statsOfObjectToUpload.path)
         })
-        .promise()) as SendDataWithVersion;
+          .on('httpUploadProgress', progress => {
+            // delay the final object:upload event until we have the file metedata
+            if (progress.loaded !== progress.total) {
+              emitter.emit('object:upload', keyOfObjectToUpload, {
+                hash: statsOfObjectToUpload.hash,
+                size: statsOfObjectToUpload.size,
+                progress: (progress.loaded / progress.total) * 100,
+                version: undefined
+              });
+            }
+          })
+          .send((error, data) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(data);
+            }
+          });
+      });
+
+      // emit the final object:upload event
       emitter.emit('object:upload', keyOfObjectToUpload, {
+        hash: statsOfObjectToUpload.hash,
+        size: statsOfObjectToUpload.size,
         progress: 100,
         version: VersionId
       });
     })
-  ); // TODO: listen for and emit progress events (httpUploadProgress) https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3/ManagedUpload.html
+  );
 }
