@@ -38,12 +38,18 @@
     "yargs": "^12.0.2"
   },
   "devDependencies": {
+    "@jameslnewell/editor-config": "^1.0.1",
+    "@jameslnewell/eslint-config": "^0.3.0",
+    "@jameslnewell/prettier-config": "^1.0.1",
+    "@jameslnewell/typescript-config": "^2.0.2",
     "@tradie/node-scripts": "^1.2.1",
     "@types/jest": "^23.3.2",
     "aws-sdk-mock": "^4.2.0",
     "husky": "^1.1.0",
+    "jest": "^24.5.0",
     "lint-staged": "^7.3.0",
-    "prettier": "^1.14.3"
+    "prettier": "^1.14.3",
+    "typescript": "^3.3.4000"
   },
   "scripts": {
     "build": "node-scripts build",
