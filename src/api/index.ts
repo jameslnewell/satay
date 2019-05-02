@@ -1,5 +1,6 @@
 import {FileStore} from './FileStore';
-import {FileSystemFileStore} from './filestore/fs';
+import {BucketFileStore} from './BucketFileStore';
+import {DiskFileStore} from './DiskFileStore';
 import {compareFileMaps} from './compareFileMaps';
 import {filterToUpload} from './filterToUpload';
 import {filterToDelete} from './filterToDelete';
@@ -21,8 +22,8 @@ export default async function(options: Options) {
     shouldDeleteDeletedFiles,
     shouldUploadUnmodifiedFiles
   } = options;
-  const sourceFileStore = source || new FileSystemFileStore(); // FIXME: pass in
-  const destinationFileStore = destination || new FileSystemFileStore(); // FIXME: pass in
+  const sourceFileStore = source;
+  const destinationFileStore = destination;
 
   if (shouldCreateStore) {
     await destinationFileStore.create();
@@ -34,13 +35,13 @@ export default async function(options: Options) {
   ]);
   const diff = compareFileMaps(sourceFileMap, destinationFileMap);
 
-  await destinationFileStore.upload(filterToUpload(diff, sourceFileMap)); // TODO: shouldUploadUnmodifiedFiles
+  await destinationFileStore.put(filterToUpload(diff, sourceFileMap)); // TODO: shouldUploadUnmodifiedFiles
 
   if (shouldDeleteDeletedFiles) {
     await destinationFileStore.delete(filterToDelete(diff, destinationFileMap));
   }
 
   return {
-    url: await destinationFileStore.url()
+    uri: await destinationFileStore.uri()
   };
 }
