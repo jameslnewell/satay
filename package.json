@@ -28,7 +28,7 @@
     "@types/minimatch": "^3.0.3",
     "@types/verror": "^1.10.3",
     "@types/yargs": "^12.0.1",
-    "aws-sdk": "^2.558.0",
+    "aws-sdk": "2.785.0",
     "chalk": "^2.4.1",
     "finder-on-steroids": "^1.0.3",
     "lodash": "^4.17.11",
